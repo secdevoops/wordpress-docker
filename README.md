@@ -16,4 +16,5 @@ docker-compose up
 
 # 3.- Enjoy
 Wordpress is available on http://localhost
+
 Phpmyadmin is available on http://localhost:8000
