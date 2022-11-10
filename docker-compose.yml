@@ -1,0 +1,54 @@
+version: '3.9'
+
+services:
+    # Database
+    secdevoops_db:
+        image: mariadb:latest
+        volumes: ['./secdevoops_db:/var/lib/mysql']
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_DATABASE: wordpress
+            MYSQL_USER: wordpress
+            MYSQL_PASSWORD: wordpress
+        networks:
+            secdevoops_network:
+                ipv4_address: 172.16.238.10
+    # phpmyadmin
+    secdevoops_phpmyadmin:
+        depends_on:
+            - secdevoops_db
+        image: phpmyadmin/phpmyadmin
+        restart: always
+        ports:
+            - '8000:80'
+        environment:
+            PMA_HOST: secdevoops_db
+            MYSQL_ROOT_PASSWORD: password 
+        networks:
+            secdevoops_network:
+                ipv4_address: 172.16.238.11
+    # Wordpress
+    secdevoops_wordpress:
+        depends_on:
+            - secdevoops_db
+        image: wordpress:latest
+        ports:
+            - '80:80'
+        restart: always
+        volumes: ['./secdevoops_wordpress:/var/www/html']
+        environment:
+            WORDPRESS_DB_HOST: secdevoops_db:3306
+            WORDPRESS_DB_USER: wordpress
+            WORDPRESS_DB_PASSWORD: wordpress
+        networks:
+            secdevoops_network:
+                ipv4_address: 172.16.238.12
+networks:
+    secdevoops_network:
+        ipam:
+            driver: default
+            config:
+                - subnet: "172.16.238.0/24"
+volumes:
+  secdevoops_db:
